@@ -3,19 +3,25 @@ package com.example.queueSystem.user.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.swing.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "User")
 public class User {
-    private Long phoneNumber;
+    @Id
+    private Integer phoneNumber;
     private String email;
 
-    public Long getPhoneNumber() {
+    public Integer getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(Integer phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
