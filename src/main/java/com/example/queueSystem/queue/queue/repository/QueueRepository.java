@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface QueueRepository extends MongoRepository<Queue, Integer>{
+public interface QueueRepository extends MongoRepository<Queue, String>{
      /**
      * Find queue by date.
      * @param date The date to search for.

@@ -27,8 +27,6 @@ public class Queue {
     private String queueStatus;
     private Restaurant restaurantDetails;
     private User userDetails;
-    
-    private Map<Integer,Integer> list = new TreeMap<>();
 
     public Queue(int queueNo, LocalDate queueDate, LocalTime queueTime, String queueStatus) {
         this.queueId = String.valueOf(queueDate) + String.valueOf(queueNo) + String.valueOf(queueTime);
@@ -36,6 +34,16 @@ public class Queue {
         this.queueDate = queueDate;
         this.queueTime = queueTime;
         this.queueStatus = queueStatus;
+    }
+
+    public Queue(int queueNo, LocalDate queueDate, LocalTime queueTime, String queueStatus, Restaurant restaurant, User user) {
+        this.queueId = String.valueOf(queueDate) + String.valueOf(queueNo) + String.valueOf(queueTime);
+        this.queueNo = queueNo;
+        this.queueDate = queueDate;
+        this.queueTime = queueTime;
+        this.queueStatus = queueStatus;
+        this.userDetails = user;
+        this.restaurantDetails = restaurant;
     }
 
     // Getters and Setters
@@ -77,10 +85,5 @@ public class Queue {
 
     public void setQueueStatus(String queueStatus) {
         this.queueStatus = queueStatus;
-    }
-
-    // Return a string representation of the queue
-    public String toString() {
-        return list.toString();
     }
 }
