@@ -42,9 +42,4 @@ public class User {
     public Boolean purchaseParkingPass(){
         return false;
     }
-
-    public boolean addQueue(Restaurant restaurant, User user) {
-        Queue queue = new Queue(0, LocalDate.now(), LocalTime.now(), "Pending", restaurant, user);
-        return false;
-    }
 }
