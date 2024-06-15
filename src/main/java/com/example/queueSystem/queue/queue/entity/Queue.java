@@ -1,6 +1,6 @@
 package com.example.queueSystem.queue.queue.entity;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Map;
 import java.util.TreeMap;
 import lombok.AllArgsConstructor;
@@ -20,28 +20,30 @@ import com.example.queueSystem.user.entity.User;
 @Document(collection = "Queue")
 public class Queue {
     @Id
-    private int queueId;
+    private String queueId;
     private int queueNo;
-    private LocalDateTime queueDateTime;
+    private LocalDate queueDate;
+    private LocalTime queueTime;
     private String queueStatus;
     private Restaurant restaurantDetails;
     private User userDetails;
     
     private Map<Integer,Integer> list = new TreeMap<>();
 
-    public Queue(int queueId, int queueNo, LocalDateTime queueDateTime, String queueStatus) {
-        this.queueId = queueId;
+    public Queue(int queueNo, LocalDate queueDate, LocalTime queueTime, String queueStatus) {
+        this.queueId = String.valueOf(queueDate) + String.valueOf(queueNo) + String.valueOf(queueTime);
         this.queueNo = queueNo;
-        this.queueDateTime = queueDateTime;
+        this.queueDate = queueDate;
+        this.queueTime = queueTime;
         this.queueStatus = queueStatus;
     }
 
     // Getters and Setters
-    public int getQueueId() {
+    public String getQueueId() {
         return queueId;
     }
 
-    public void setQueueId(int queueId) {
+    public void setQueueId(String queueId) {
         this.queueId = queueId;
     }
 
@@ -53,12 +55,20 @@ public class Queue {
         this.queueNo = queueNo;
     }
 
-    public LocalDateTime getQueueDateTime() {
-        return queueDateTime;
+    public LocalDate getQueueDate() {
+        return queueDate;
     }
 
-    public void setQueueDateTime(LocalDateTime queueDateTime) {
-        this.queueDateTime = queueDateTime;
+    public void setQueueDate(LocalDate queueDate) {
+        this.queueDate = queueDate;
+    }
+
+    public LocalTime getQueueTime() {
+        return queueTime;
+    }
+
+    public void setQueueTime(LocalTime queueTime) {
+        this.queueTime = queueTime;
     }
 
     public String getQueueStatus() {

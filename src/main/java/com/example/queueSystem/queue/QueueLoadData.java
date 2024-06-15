@@ -2,7 +2,7 @@ package com.example.queueSystem.queue;
 
 import jakarta.annotation.PostConstruct;
 
-import java.time.LocalDateTime;
+import java.time.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,12 @@ public class QueueLoadData {
     @PostConstruct
     public void run() {
         try {
-            //restaurantRepository.deleteAll();
-            queueRepository.save(new Queue(1, 1, LocalDateTime.now(), "Pending"));
-            queueRepository.save(new Queue(2, 2, LocalDateTime.now(), "Pending"));
+            queueRepository.deleteAll();
+            queueRepository.save(new Queue(1, LocalDate.now(), LocalTime.now() ,"Completed"));
+            queueRepository.save(new Queue(2, LocalDate.now(), LocalTime.now() ,"Completed"));
+            queueRepository.save(new Queue(3, LocalDate.now(), LocalTime.now() ,"In Queue"));
+            queueRepository.save(new Queue(4, LocalDate.now(), LocalTime.now() ,"In Queue"));
+            queueRepository.save(new Queue(5, LocalDate.now(), LocalTime.now() ,"Cancelled"));
         } catch (Exception e) {
             // Handle any exceptions that may occur during data loading
             // Log the error or perform any necessary cleanup

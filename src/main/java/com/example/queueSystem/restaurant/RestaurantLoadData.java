@@ -15,9 +15,10 @@ public class RestaurantLoadData {
     @PostConstruct
     public void run() {
         try {
-            //restaurantRepository.deleteAll();
-            restaurantRepository.save(new Restaurant(1, "Test1"));
-            restaurantRepository.save(new Restaurant(2, "Test2"));
+            restaurantRepository.deleteAll();
+            restaurantRepository.save(new Restaurant(1, "Din Tai Fung"));
+            restaurantRepository.save(new Restaurant(2, "Swensen"));
+            restaurantRepository.save(new Restaurant(3, "Pappa Rich"));
         } catch (Exception e) {
             // Handle any exceptions that may occur during data loading
             // Log the error or perform any necessary cleanup
