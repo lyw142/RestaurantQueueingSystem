@@ -1,6 +1,6 @@
 package com.example.queueSystem.message;
 
-public class SMS {
+public class SMSTestData {
 
     public static void main(String[] args) {
         String queueNumber = "70";
