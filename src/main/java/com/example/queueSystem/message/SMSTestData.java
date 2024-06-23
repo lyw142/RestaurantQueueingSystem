@@ -1,6 +1,6 @@
 package com.example.queueSystem.message;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class SMSTestData {
@@ -10,7 +10,7 @@ public class SMSTestData {
         String waitingTime = "20 minutes";
 
         Properties prop = new Properties();
-        try (FileInputStream input = new FileInputStream("application.properties")) {
+        try (InputStream input = SMSTestData.class.getClassLoader().getResourceAsStream("application.properties")) {
             prop.load(input);
         } catch (Exception ex) {
             ex.printStackTrace();

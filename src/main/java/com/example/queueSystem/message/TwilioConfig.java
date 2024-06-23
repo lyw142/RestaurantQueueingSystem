@@ -12,11 +12,20 @@ import com.twilio.rest.api.v2010.account.Message;
 @Component
 public class TwilioConfig {
 
-    @Value("${TWILIO_ACCOUNT_SID}")
+    @Value("${twilio.account.sid}")
     private String ACCOUNT_SID;
 
-    @Value("${TWILIO_AUTH_TOKEN}")
+    @Value("${twilio.auth.token}")
     private String AUTH_TOKEN;
+
+    @Value("${phone.number}")
+    private String PHONE_NUMBER;
+    
+    @Value("${twilio.sms.phone.number}")
+    private String TWILIO_SMS_PHONE_NUMBER;
+
+    @Value("${twilio.whatsapp.phone.number}")
+    private String TWILIO_WHATSAPP_PHONE_NUMBER;
 
     public Map<String, String> buildTwilioAPI() {
         Map<String, String> loadDetails = new HashMap<>();
@@ -30,17 +39,23 @@ public class TwilioConfig {
 
             properties.load(input);
 
-            String ACCOUNT_SID = properties.getProperty("TWILIO_ACCOUNT_SID");
-            String AUTH_TOKEN = properties.getProperty("TWILIO_AUTH_TOKEN");
+            String ACCOUNT_SID = properties.getProperty("twilio.account.sid");
+            String AUTH_TOKEN = properties.getProperty("twilio.auth.token");
+            String PHONE_NUMBER = properties.getProperty("phone.number");
+            String TWILIO_SMS_PHONE_NUMBER = properties.getProperty("twilio.sms.phone.number");
+            String TWILIO_WHATSAPP_PHONE_NUMBER = properties.getProperty("twilio.whatsapp.phone.number");
 
-            if (ACCOUNT_SID == null || AUTH_TOKEN == null) {
+            if (ACCOUNT_SID == null || AUTH_TOKEN == null || PHONE_NUMBER == null || TWILIO_SMS_PHONE_NUMBER == null || TWILIO_WHATSAPP_PHONE_NUMBER == null) {
                 System.err.println(
-                        "Please set the TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN properties in the application.properties file.");
+                        "Please set the token, phone number and properties in the application.properties file.");
                 System.exit(1);
             }
 
             loadDetails.put("ACCOUNT_SID", ACCOUNT_SID);
             loadDetails.put("AUTH_TOKEN", AUTH_TOKEN);
+            loadDetails.put("PHONE_NUMBER", PHONE_NUMBER);
+            loadDetails.put("TWILIO_SMS_PHONE_NUMBER", TWILIO_SMS_PHONE_NUMBER);
+            loadDetails.put("TWILIO_WHATSAPP_PHONE_NUMBER", TWILIO_WHATSAPP_PHONE_NUMBER);
 
             return loadDetails;
 
@@ -64,8 +79,8 @@ public class TwilioConfig {
         Twilio.init(TwilioDetails.get("ACCOUNT_SID"), TwilioDetails.get("AUTH_TOKEN"));
 
         Message message = Message.creator(
-                new com.twilio.type.PhoneNumber(phoneNum),
-                new com.twilio.type.PhoneNumber("+15306185927"),
+                new com.twilio.type.PhoneNumber(TwilioDetails.get("PHONE_NUMBER")),
+                new com.twilio.type.PhoneNumber(TwilioDetails.get("TWILIO_SMS_PHONE_NUMBER")),
                 messageContent.toString())
                 .create();
 
@@ -91,8 +106,8 @@ public class TwilioConfig {
         Twilio.init(TwilioDetails.get("ACCOUNT_SID"), TwilioDetails.get("AUTH_TOKEN"));
 
         Message message = Message.creator(
-                new com.twilio.type.PhoneNumber("whatsapp:" + phoneNum),
-                new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
+                new com.twilio.type.PhoneNumber("whatsapp:" + TwilioDetails.get("PHONE_NUMBER")),
+                new com.twilio.type.PhoneNumber("whatsapp:" + TwilioDetails.get("TWILIO_WHATSAPP_PHONE_NUMBER")),
                 messageContent.toString())
                 .create();
 
