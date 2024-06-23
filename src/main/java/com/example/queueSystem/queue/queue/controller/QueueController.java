@@ -1,5 +1,6 @@
 package com.example.queueSystem.queue.queue.controller;
 
+import com.example.queueSystem.message.TwilioConfig;
 import com.example.queueSystem.queue.queue.entity.Queue;
 import com.example.queueSystem.queue.queue.repository.QueueRepository;
 import com.example.queueSystem.restaurant.entity.Restaurant;
@@ -122,6 +123,9 @@ public class QueueController {
 
         if (newQueue != null && newQueue.getQueueId() != null) {
             // Add the user to the queue
+            TwilioConfig twilio = new TwilioConfig();
+            twilio.SendSMS(restaurant.getRestaurantName(),String.valueOf(newQueue.getQueueNo()),"10 minutes", "+65" + phoneNumber);
+            twilio.SendWhatsappMessage(restaurant.getRestaurantName(),String.valueOf(newQueue.getQueueNo()),"10 minutes", "+65" + phoneNumber);
             return ResponseEntity.ok(newQueue.getQueueNo());
         }
 
@@ -155,6 +159,23 @@ public class QueueController {
                 existingQueue.setQueueStatus(status);
             }
         }
+        
+        queueRepository.save(existingQueue);
+
+        return ResponseEntity.ok("Update Successful");
+    }
+
+    @PutMapping("/updateQueueStatus/{queueID}")
+    public ResponseEntity<String> updateQueueStatus(String queueId) {
+        // Retrieve the existing queue from the repository
+        Optional<Queue> optionalQueue = queueRepository.findById(queueId);
+        if (!optionalQueue.isPresent()) {
+            return ResponseEntity.badRequest().body("Queue ID not found");
+        }
+
+        Queue existingQueue = optionalQueue.get();
+
+        existingQueue.setQueueStatus("Completed");
         
         queueRepository.save(existingQueue);
 
