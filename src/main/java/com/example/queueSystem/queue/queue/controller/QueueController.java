@@ -164,21 +164,4 @@ public class QueueController {
 
         return ResponseEntity.ok("Update Successful");
     }
-
-    @PutMapping("/updateQueueStatus/{queueID}")
-    public ResponseEntity<String> updateQueueStatus(String queueId) {
-        // Retrieve the existing queue from the repository
-        Optional<Queue> optionalQueue = queueRepository.findById(queueId);
-        if (!optionalQueue.isPresent()) {
-            return ResponseEntity.badRequest().body("Queue ID not found");
-        }
-
-        Queue existingQueue = optionalQueue.get();
-
-        existingQueue.setQueueStatus("Completed");
-        
-        queueRepository.save(existingQueue);
-
-        return ResponseEntity.ok("Update Successful");
-    }
 }

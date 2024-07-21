@@ -1,95 +1,24 @@
-// import React, { useState } from 'react';
-// import './Queue.css';
-
-// const Queue = () => {
-//     const [selectedPax, setSelectedPax] = useState('');
-//     const [phoneNumber, setPhoneNumber] = useState('');
-
-//     const handlePaxSelection = (pax) => {
-//         setSelectedPax(pax);
-//     };
-
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//         console.log('Pax:', selectedPax);
-//         console.log('Phone Number:', phoneNumber);
-//         // You can add further logic to handle the form submission
-//     };
-
-//     return (
-//         <div className="queue-container">
-//             <h2 className="queue-header">Please Queue Now</h2>
-//             <form onSubmit={handleSubmit}>
-//                 <div className="button-container">
-//                     <button
-//                         type="button"
-//                         className={`queue-button ${selectedPax === '1-2' ? 'selected' : ''}`}
-//                         onClick={() => handlePaxSelection('1-2')}
-//                     >
-//                         1-2 pax
-//                     </button>
-//                     <button
-//                         type="button"
-//                         className={`queue-button ${selectedPax === '3-4' ? 'selected' : ''}`}
-//                         onClick={() => handlePaxSelection('3-4')}
-//                     >
-//                         3-4 pax
-//                     </button>
-//                     <button
-//                         type="button"
-//                         className={`queue-button ${selectedPax === '5-6' ? 'selected' : ''}`}
-//                         onClick={() => handlePaxSelection('5-6')}
-//                     >
-//                         5-6 pax
-//                     </button>
-//                     <button
-//                         type="button"
-//                         className={`queue-button ${selectedPax === '>6' ? 'selected' : ''}`}
-//                         onClick={() => handlePaxSelection('>6')}
-//                     >
-//                         &gt;6 pax
-//                     </button>
-//                 </div>
-//                 <div className="form-group">
-//                     Phone Number: <input
-//                         type="tel"
-//                         className="input-field"
-//                         placeholder="Enter phone number"
-//                         value={phoneNumber}
-//                         onChange={(e) => setPhoneNumber(e.target.value)}
-//                         required
-//                     />
-//                     <button type="submit" className="submit-button">
-//                         Confirm to queue
-//                     </button>
-//                 </div>
-//             </form>
-//         </div>
-//     );
-// };
-
 // export default Queue;
 import React, { useState } from 'react';
 import './Queue.css';
 import logo from '../../assets/food.jpg';
+import { enQueue, updateQueue } from '../../route';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 const Queue = () => {
-    const [selectedPax, setSelectedPax] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [selectedPax, setSelectedPax] = useState(2);
+    const [phoneNum, setPhoneNum] = useState('');
     const [showPopup, setShowPopup] = useState(false);
     const [email, setEmail] = useState('');
     const [waitingTime, setWaitingTime] = useState(15); // Set a default waiting time
 
-    const handlePaxSelection = (pax) => {
-        setSelectedPax(pax);
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Pax:', selectedPax);
-        console.log('Phone Number:', phoneNumber);
-        // You can add further logic to handle the form submission
-        setShowPopup(true);
+        console.log('Phone Number:', phoneNum);
+        addQueue();
     };
 
     const handleSignUp = (e) => {
@@ -102,48 +31,63 @@ const Queue = () => {
         setShowPopup(false);
     };
 
+    const addQueue = async () => {
+        try {
+            const response = await axios.post(`${enQueue}`, {
+                phoneNumber: parseInt(phoneNum),
+                restaurantID: 2,
+                numOfPax:  parseInt(selectedPax),
+            });
+
+            if (response.status !== 200) {
+                toast.error('Error adding queue 1. Please try again', {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce
+                });
+                return;
+            }
+
+            setShowPopup(true);
+
+        } catch (err) {
+            toast.error('Error adding queue 2. Please try again', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce
+            });
+        }
+    };
+
     return (
         <div className="queue-container">
-            <h2 className="queue-header">Please Queue Now</h2>
+            <h2 className="queue-header">Register to Queue</h2>
             <form className="form-container" onSubmit={handleSubmit}>
-                <div className="button-container">
-                    <button
-                        type="button"
-                        className={`queue-button ${selectedPax === '1-2' ? 'selected' : ''}`}
-                        onClick={() => handlePaxSelection('1-2')}
-                    >
-                        1-2 pax
-                    </button>
-                    <button
-                        type="button"
-                        className={`queue-button ${selectedPax === '3-4' ? 'selected' : ''}`}
-                        onClick={() => handlePaxSelection('3-4')}
-                    >
-                        3-4 pax
-                    </button>
-                    <button
-                        type="button"
-                        className={`queue-button ${selectedPax === '5-6' ? 'selected' : ''}`}
-                        onClick={() => handlePaxSelection('5-6')}
-                    >
-                        5-6 pax
-                    </button>
-                    <button
-                        type="button"
-                        className={`queue-button ${selectedPax === '>6' ? 'selected' : ''}`}
-                        onClick={() => handlePaxSelection('>6')}
-                    >
-                        &gt;6 pax
-                    </button>
+                <div className="form-group">
+                    <label for="pax">Number of Pax:</label>
+                    <input type="number" id="numOfPax" name="pax" className="input-field" value={selectedPax} onChange={(e) => setSelectedPax(e.target.value)} min="1" max="12" required></input>
                 </div>
                 <div className="form-group">
-                    Phone Number: 
+                    <label for="phoneNum">Phone Number:</label>
                     <input
                         type="tel"
                         className="input-field"
+                        name="phoneNum"
                         placeholder="Enter phone number"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        value={phoneNum}
+                        onChange={(e) => setPhoneNum(e.target.value)}
                         pattern="[689][0-9]{7}"
                         title="Phone number should start with 6, 8, or 9 and be 8 digits long"
                         required
@@ -154,6 +98,10 @@ const Queue = () => {
                 </button>
             </form>
 
+            <div>
+                <ToastContainer />
+            </div>
+
             {showPopup && (
                 <div className="popup">
                     <div className="popup-inner">
@@ -161,7 +109,7 @@ const Queue = () => {
                             <h3>Thank You For Queueing!</h3>
                             <p>Below is the confirmed details and approximate waiting time for your queue</p>
                             <p>Pax: {selectedPax}</p>
-                            <p>Phone Number: {phoneNumber}</p>
+                            <p>Phone Number: {phoneNum}</p>
                             <p>Waiting Time: {waitingTime} minutes</p>
                             <br></br>
                             <form onSubmit={handleSignUp} className="sign-up-form">
