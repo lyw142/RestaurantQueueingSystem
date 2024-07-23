@@ -14,13 +14,13 @@ public class QueueSystemApplication {
 
 	public static void main(String[] args) {
 
-		try {
-			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-			telegramBotsApi.registerBot(new TelegramBot());
-			System.out.println("Bot Started Successfully");
-		} catch (TelegramApiException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// 	TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+		// 	telegramBotsApi.registerBot(new TelegramBot());
+		// 	System.out.println("Bot Started Successfully");
+		// } catch (TelegramApiException e) {
+		// 	e.printStackTrace();
+		// }
 
 		SpringApplication.run(QueueSystemApplication.class, args);
 	}

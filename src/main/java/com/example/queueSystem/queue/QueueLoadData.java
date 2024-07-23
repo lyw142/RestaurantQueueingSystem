@@ -35,11 +35,11 @@ public class QueueLoadData {
             queueRepository.deleteAll();
             Restaurant restaurant1 = restaurantRepository.findById(1).get();
             Restaurant restaurant2 = restaurantRepository.findById(2).get();
-            User user1 = userRepository.findById(93293819).get();
-            User user2 = userRepository.findById(82371231).get();
-            queueRepository.save(new Queue(1, LocalDate.now(), LocalTime.now() , 2, "Completed", restaurant1, user1));
-            queueRepository.save(new Queue(2, LocalDate.now(), LocalTime.now() , 3, "Completed", restaurant1, user2));
-            queueRepository.save(new Queue(1, LocalDate.now(), LocalTime.now() , 5, "In Queue", restaurant2, user1));
+            //User user1 = userRepository.findById(93293819).get();
+            //User user2 = userRepository.findById(82371231).get();
+            queueRepository.save(new Queue(1, LocalDate.now(), LocalTime.now() , 2, "Completed", restaurant1, "98856231"));
+            queueRepository.save(new Queue(2, LocalDate.now(), LocalTime.now() , 3, "Completed", restaurant1, "98765432"));
+            queueRepository.save(new Queue(1, LocalDate.now(), LocalTime.now() , 5, "In Queue", restaurant2, "65432109"));
             //queueRepository.save(new Queue(4, LocalDate.now(), LocalTime.now() ,"In Queue"));
             //queueRepository.save(new Queue(5, LocalDate.now(), LocalTime.now() ,"Cancelled"));
         } catch (Exception e) {

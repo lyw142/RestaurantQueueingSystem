@@ -23,25 +23,28 @@ public class Queue {
     private int queueNo;
     private LocalDate queueDate;
     private LocalTime queueTime;
+    private int waitingTime;
     private int queuePax;
     private String queueStatus;
+    private String userPhoneNum;
 
     @DBRef(lazy = true)
     @JsonIgnore
     private Restaurant restaurantDetails;
     
-    @DBRef(lazy = true)
-    @JsonIgnore
-    private User userDetails;
+    // @DBRef(lazy = true)
+    // @JsonIgnore
+    // private User userDetails;
 
-    public Queue(int queueNo, LocalDate queueDate, LocalTime queueTime, int queuePax, String queueStatus, Restaurant restaurant, User user) {
+    public Queue(int queueNo, LocalDate queueDate, LocalTime queueTime, int queuePax, String queueStatus, Restaurant restaurant, String userPhoneNum) {
         this.queueId = String.valueOf(queueDate) + String.valueOf(queueNo) + String.valueOf(queueTime);
         this.queueNo = queueNo;
         this.queueDate = queueDate;
         this.queueTime = queueTime;
         this.queuePax = queuePax;
         this.queueStatus = queueStatus;
-        this.userDetails = user;
+        this.waitingTime = 10;
+        this.userPhoneNum = userPhoneNum;
         this.restaurantDetails = restaurant;
     }
 
@@ -86,11 +89,27 @@ public class Queue {
         this.queueTime = queueTime;
     }
 
+    public int getWaitingTime() {
+        return waitingTime;
+    }
+
+    public void setWaitingTime(int waitingTime) {
+        this.waitingTime = waitingTime;
+    }
+
     public String getQueueStatus() {
         return queueStatus;
     }
 
     public void setQueueStatus(String queueStatus) {
         this.queueStatus = queueStatus;
+    }
+
+    public String getPhoneNum() {
+        return userPhoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.userPhoneNum = phoneNum;
     }
 }

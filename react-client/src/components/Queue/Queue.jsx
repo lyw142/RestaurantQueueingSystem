@@ -12,12 +12,12 @@ const Queue = () => {
     const [phoneNum, setPhoneNum] = useState('');
     const [showPopup, setShowPopup] = useState(false);
     const [email, setEmail] = useState('');
-    const [waitingTime, setWaitingTime] = useState(15); // Set a default waiting time
+    const [queueNo, setQueueNo] = useState('');
+    const [waitingTime, setWaitingTime] = useState('');
+    const [queueStatus, setQueueStatus] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Pax:', selectedPax);
-        console.log('Phone Number:', phoneNum);
         addQueue();
     };
 
@@ -34,9 +34,9 @@ const Queue = () => {
     const addQueue = async () => {
         try {
             const response = await axios.post(`${enQueue}`, {
-                phoneNumber: parseInt(phoneNum),
+                phoneNumber: phoneNum,
                 restaurantID: 2,
-                numOfPax:  parseInt(selectedPax),
+                numOfPax: parseInt(selectedPax),
             });
 
             if (response.status !== 200) {
@@ -54,6 +54,10 @@ const Queue = () => {
                 return;
             }
 
+            console.log(response.data);
+            setQueueNo(response.data['queueNo']);
+            setWaitingTime(response.data['waitingTime']);
+            setQueueStatus(response.data['status']);
             setShowPopup(true);
 
         } catch (err) {
@@ -108,9 +112,11 @@ const Queue = () => {
                         <div className="confirmation-text">
                             <h3>Thank You For Queueing!</h3>
                             <p>Below is the confirmed details and approximate waiting time for your queue</p>
+                            <p>Queue Number: {queueNo}</p>
                             <p>Pax: {selectedPax}</p>
                             <p>Phone Number: {phoneNum}</p>
                             <p>Waiting Time: {waitingTime} minutes</p>
+                            <p>Status : {queueStatus}</p>
                             <br></br>
                             <form onSubmit={handleSignUp} className="sign-up-form">
                                 <h4>Sign Up Now!</h4>

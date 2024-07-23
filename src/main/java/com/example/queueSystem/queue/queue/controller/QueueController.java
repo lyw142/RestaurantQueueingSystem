@@ -8,6 +8,7 @@ import com.example.queueSystem.restaurant.repository.RestaurantRepository;
 import com.example.queueSystem.user.entity.User;
 import com.example.queueSystem.user.repository.UserRepository;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -94,8 +95,10 @@ public class QueueController {
     }
 
     @PostMapping("/enQueue")
-    public ResponseEntity<Integer> enQueue(@RequestBody Map<String, Object> details) {
-        int phoneNumber = (int) details.get("phoneNumber");
+    public ResponseEntity<Map<String,Object>> enQueue(@RequestBody Map<String, Object> details) {
+        Map<String,Object> result = new HashMap<>();
+        
+        String phoneNumber = (String) details.get("phoneNumber");
         int restaurantID = (int) details.get("restaurantID");
         int numOfPax = (int) details.get("numOfPax");
         List<Queue> queues =  queueRepository.findQueueByQueueDate(LocalDate.now());
@@ -113,11 +116,11 @@ public class QueueController {
             }
         }
 
-        User user = userRepository.findById(phoneNumber).get();
+        //User user = userRepository.findById(phoneNumber).get();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantID).get();
 
-        Queue newQueue = new Queue(latestQueueNumber + 1, LocalDate.now() , LocalTime.now() , numOfPax, "Pending" , restaurant , user);
+        Queue newQueue = new Queue(latestQueueNumber + 1, LocalDate.now() , LocalTime.now() , numOfPax, "In Queue" , restaurant , phoneNumber);
         
         newQueue = queueRepository.save(newQueue);
 
@@ -126,10 +129,13 @@ public class QueueController {
             TwilioConfig twilio = new TwilioConfig();
             twilio.SendSMS(restaurant.getRestaurantName(),String.valueOf(newQueue.getQueueNo()),"10 minutes", "+65" + phoneNumber);
             twilio.SendWhatsappMessage(restaurant.getRestaurantName(),String.valueOf(newQueue.getQueueNo()),"10 minutes", "+65" + phoneNumber);
-            return ResponseEntity.ok(newQueue.getQueueNo());
+            result.put("queueNo",newQueue.getQueueNo());
+            result.put("waitingTime",newQueue.getWaitingTime());
+            result.put("status",newQueue.getQueueStatus());
+            return ResponseEntity.ok(result);
         }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 
     @PutMapping("/updateQueue")
