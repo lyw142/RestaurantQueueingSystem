@@ -35,7 +35,7 @@ const Queue = () => {
         try {
             const response = await axios.post(`${enQueue}`, {
                 phoneNumber: phoneNum,
-                restaurantID: 2,
+                restaurantName: "Pappa Rich",
                 numOfPax: parseInt(selectedPax),
             });
 

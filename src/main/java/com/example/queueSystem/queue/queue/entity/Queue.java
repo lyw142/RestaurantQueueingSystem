@@ -112,4 +112,8 @@ public class Queue {
     public void setPhoneNum(String phoneNum) {
         this.userPhoneNum = phoneNum;
     }
+
+    public Restaurant getRestaurantDetails() {
+        return restaurantDetails;
+    }
 }

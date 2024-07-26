@@ -52,19 +52,17 @@ public class QueueController {
     @GetMapping("/byDate")
     public List<Queue> fetchQueueByDate(@RequestBody Map<String, Object> details) {
         String dateString = (String) details.get("date");
-        int restaurantID = (int) details.get("restaurantID");
+        String restaurantName = (String) details.get("restaurantName");
         
         LocalDate date = LocalDate.parse(dateString); // Parse the date string from the URL
-        System.out.println(date);
 
         List<Queue> queuelist = queueRepository.findQueueByQueueDate(date);
-        System.out.println(queuelist);
 
         Iterator<Queue> iterator = queuelist.iterator();
         while (iterator.hasNext()) {
             Queue queue = iterator.next();
             Restaurant restaurant = queue.getRestaurantDetails();
-            if (restaurant == null || restaurant.getRestaurantID() != restaurantID) {
+            if (restaurant == null || restaurant.getRestaurantName() != restaurantName) {
                 iterator.remove();
             }
         }
@@ -72,8 +70,8 @@ public class QueueController {
         return queuelist;
     }
 
-    @GetMapping("/latestQueueNumber/{restaurantID}")
-    public int fetchLatestQueueNumber(@PathVariable("restaurantID") Integer restaurantID) {
+    @GetMapping("/latestQueueNumber/{restaurantName}")
+    public int fetchLatestQueueNumber(@PathVariable("restaurantName") String restaurantName) {
         List<Queue> queues =  queueRepository.findQueueByQueueDate(LocalDate.now());
         
         if (queues.isEmpty()) {
@@ -84,7 +82,7 @@ public class QueueController {
 
         for (Queue queue : queues) {
             Restaurant restaurant = queue.getRestaurantDetails();
-            if (restaurantID == restaurant.getRestaurantID()) {
+            if (restaurantName == restaurant.getRestaurantName()) {
                 if (queue.getQueueNo() > latestQueueNumber) {
                     latestQueueNumber = queue.getQueueNo();
                 }
@@ -99,7 +97,7 @@ public class QueueController {
         Map<String,Object> result = new HashMap<>();
         
         String phoneNumber = (String) details.get("phoneNumber");
-        int restaurantID = (int) details.get("restaurantID");
+        String restaurantName = (String) details.get("restaurantName");
         int numOfPax = (int) details.get("numOfPax");
         List<Queue> queues =  queueRepository.findQueueByQueueDate(LocalDate.now());
         
@@ -107,8 +105,10 @@ public class QueueController {
 
         if (!queues.isEmpty()) {
             for (Queue queue : queues) {
+                System.out.println(queue);
                 Restaurant restaurant = queue.getRestaurantDetails();
-                if (restaurantID == restaurant.getRestaurantID()) {
+                System.out.println(restaurant.getName());
+                if (restaurantName.equals(restaurant.getName())) {
                     if (queue.getQueueNo() > latestQueueNumber) {
                         latestQueueNumber = queue.getQueueNo();
                     }
@@ -118,7 +118,7 @@ public class QueueController {
 
         //User user = userRepository.findById(phoneNumber).get();
 
-        Restaurant restaurant = restaurantRepository.findById(restaurantID).get();
+        Restaurant restaurant = restaurantRepository.findRestaurantByName(restaurantName).get();
 
         Queue newQueue = new Queue(latestQueueNumber + 1, LocalDate.now() , LocalTime.now() , numOfPax, "In Queue" , restaurant , phoneNumber);
         
@@ -137,6 +137,8 @@ public class QueueController {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
+
+    // TODO
 
     @PutMapping("/updateQueue")
     public ResponseEntity<String> updateQueue(@RequestBody Map<String, Object> details) {
