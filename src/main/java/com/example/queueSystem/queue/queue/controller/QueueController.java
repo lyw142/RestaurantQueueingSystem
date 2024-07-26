@@ -62,7 +62,7 @@ public class QueueController {
         while (iterator.hasNext()) {
             Queue queue = iterator.next();
             Restaurant restaurant = queue.getRestaurantDetails();
-            if (restaurant == null || restaurant.getRestaurantName() != restaurantName) {
+            if (restaurant == null || !(restaurant.getRestaurantName().equals(restaurantName))) {
                 iterator.remove();
             }
         }
@@ -82,7 +82,7 @@ public class QueueController {
 
         for (Queue queue : queues) {
             Restaurant restaurant = queue.getRestaurantDetails();
-            if (restaurantName == restaurant.getRestaurantName()) {
+            if (restaurantName.equals(restaurant.getRestaurantName())) {
                 if (queue.getQueueNo() > latestQueueNumber) {
                     latestQueueNumber = queue.getQueueNo();
                 }
@@ -137,8 +137,6 @@ public class QueueController {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
-
-    // TODO
 
     @PutMapping("/updateQueue")
     public ResponseEntity<String> updateQueue(@RequestBody Map<String, Object> details) {

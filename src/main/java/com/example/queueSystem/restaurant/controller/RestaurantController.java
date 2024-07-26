@@ -7,6 +7,7 @@ import com.example.queueSystem.restaurant.repository.RestaurantRepository;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -108,22 +109,28 @@ public class RestaurantController {
             restaurant.setLogo((String) details.get("restaurantLogo"));
         }
 
-        //TODO : Ensure that the remaining day is still intact if the updates involves several days only.
-
-        // Update operation hours if provided
+         // Update operation hours if provided
         if (details.containsKey("operationHours")) {
             List<Map<String, Object>> operationHoursList = (List<Map<String, Object>>) details.get("operationHours");
-            List<OperationHours> operationHours = new ArrayList<>();
+            Map<DayOfWeek, OperationHours> operationHoursMap = new HashMap<>();
 
+            // Create a map of existing operation hours
+            for (OperationHours existingOpHour : restaurant.getOperatingHours()) {
+                operationHoursMap.put(existingOpHour.getDay(), existingOpHour);
+            }
+
+            // Update the map with new operation hours
             for (Map<String, Object> operationHour : operationHoursList) {
                 DayOfWeek day = DayOfWeek.valueOf((String) operationHour.get("day"));
                 LocalTime openingTime = LocalTime.parse((String) operationHour.get("openingTime"));
                 LocalTime closingTime = LocalTime.parse((String) operationHour.get("closingTime"));
 
-                operationHours.add(new OperationHours(day, openingTime, closingTime));
+                operationHoursMap.put(day, new OperationHours(day, openingTime, closingTime));
             }
 
-            restaurant.setOperatingHours(operationHours);
+            // Convert map back to list and set it
+            List<OperationHours> updatedOperationHours = new ArrayList<>(operationHoursMap.values());
+            restaurant.setOperatingHours(updatedOperationHours);
         }
 
         // Save the updated restaurant
