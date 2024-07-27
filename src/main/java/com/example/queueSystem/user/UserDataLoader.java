@@ -1,5 +1,6 @@
 package com.example.queueSystem.user;
 
+import com.example.queueSystem.user.entity.RestaurantUser;
 import com.example.queueSystem.user.entity.User;
 import com.example.queueSystem.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +19,7 @@ public class UserDataLoader {
             userRepository.deleteAll();
             userRepository.save(new User(93293819, "cydnietest@gmail.com"));
             userRepository.save(new User(82371231, "cydnietest2@gmail.com"));
+            userRepository.save(new RestaurantUser(98856213, "cydnietest3@gmail.com", "cydnietest", "123456"));
         } catch (Exception e) {
             // Handle any exceptions that may occur during data loading
             // Log the error or perform any necessary cleanup
