@@ -8,6 +8,7 @@ import com.example.queueSystem.restaurant.repository.RestaurantRepository;
 import com.example.queueSystem.user.entity.User;
 import com.example.queueSystem.user.repository.UserRepository;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,14 +39,15 @@ public class QueueController {
 
     private final RestaurantRepository restaurantRepository;
 
-    public QueueController(QueueRepository queueRepository, UserRepository userRepository, RestaurantRepository restaurantRepository) {
+    public QueueController(QueueRepository queueRepository, UserRepository userRepository,
+            RestaurantRepository restaurantRepository) {
         this.queueRepository = queueRepository;
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
     }
 
     @GetMapping
-    public List<Queue> fetchAllQueue(){
+    public List<Queue> fetchAllQueue() {
         return queueRepository.findAll();
     }
 
@@ -53,7 +55,7 @@ public class QueueController {
     public List<Queue> fetchQueueByDate(@RequestBody Map<String, Object> details) {
         String dateString = (String) details.get("date");
         String restaurantName = (String) details.get("restaurantName");
-        
+
         LocalDate date = LocalDate.parse(dateString); // Parse the date string from the URL
 
         List<Queue> queuelist = queueRepository.findQueueByQueueDate(date);
@@ -72,8 +74,8 @@ public class QueueController {
 
     @GetMapping("/latestQueueNumber/{restaurantName}")
     public int fetchLatestQueueNumber(@PathVariable("restaurantName") String restaurantName) {
-        List<Queue> queues =  queueRepository.findQueueByQueueDate(LocalDate.now());
-        
+        List<Queue> queues = queueRepository.findQueueByQueueDate(LocalDate.now());
+
         if (queues.isEmpty()) {
             return 0; // Return 0 if no queues are found
         }
@@ -93,21 +95,24 @@ public class QueueController {
     }
 
     @PostMapping("/enQueue")
-    public ResponseEntity<Map<String,Object>> enQueue(@RequestBody Map<String, Object> details) {
-        Map<String,Object> result = new HashMap<>();
-        
+    public ResponseEntity<Map<String, Object>> enQueue(@RequestBody Map<String, Object> details) {
+        Map<String, Object> result = new HashMap<>();
+
         String phoneNumber = (String) details.get("phoneNumber");
         String restaurantName = (String) details.get("restaurantName");
         int numOfPax = (int) details.get("numOfPax");
-        List<Queue> queues =  queueRepository.findQueueByQueueDate(LocalDate.now());
-        
+        List<Queue> queues = queueRepository.findQueueByQueueDate(LocalDate.now());
+
+        if (!checkQueueByCustomer(phoneNumber)) {
+            result.put("message", "Customer already has an existing queue and cannot join another.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(result);
+        }
+
         int latestQueueNumber = 0;
 
         if (!queues.isEmpty()) {
             for (Queue queue : queues) {
-                System.out.println(queue);
                 Restaurant restaurant = queue.getRestaurantDetails();
-                System.out.println(restaurant.getName());
                 if (restaurantName.equals(restaurant.getName())) {
                     if (queue.getQueueNo() > latestQueueNumber) {
                         latestQueueNumber = queue.getQueueNo();
@@ -116,26 +121,44 @@ public class QueueController {
             }
         }
 
-        //User user = userRepository.findById(phoneNumber).get();
+        // User user = userRepository.findById(phoneNumber).get();
 
         Restaurant restaurant = restaurantRepository.findRestaurantByName(restaurantName).get();
 
-        Queue newQueue = new Queue(latestQueueNumber + 1, LocalDate.now() , LocalTime.now() , numOfPax, "In Queue" , restaurant , phoneNumber);
-        
+        Queue newQueue = new Queue(latestQueueNumber + 1, LocalDate.now(), LocalTime.now(), numOfPax, "Waiting",
+                restaurant, phoneNumber);
+
         newQueue = queueRepository.save(newQueue);
 
         if (newQueue != null && newQueue.getQueueId() != null) {
             // Add the user to the queue
-            TwilioConfig twilio = new TwilioConfig();
-            twilio.SendSMS(restaurant.getRestaurantName(),String.valueOf(newQueue.getQueueNo()),"10 minutes", "+65" + phoneNumber);
-            twilio.SendWhatsappMessage(restaurant.getRestaurantName(),String.valueOf(newQueue.getQueueNo()),"10 minutes", "+65" + phoneNumber);
-            result.put("queueNo",newQueue.getQueueNo());
-            result.put("waitingTime",newQueue.getWaitingTime());
-            result.put("status",newQueue.getQueueStatus());
+            // TwilioConfig twilio = new TwilioConfig();
+            // twilio.SendSMS(restaurant.getRestaurantName(), String.valueOf(newQueue.getQueueNo()), "10 minutes",
+            //         "+65" + phoneNumber);
+            // twilio.SendWhatsappMessage(restaurant.getRestaurantName(), String.valueOf(newQueue.getQueueNo()),
+            //         "10 minutes", "+65" + phoneNumber);
+            result.put("queueNo", newQueue.getQueueNo());
+            result.put("waitingTime", newQueue.getWaitingTime());
+            result.put("status", newQueue.getQueueStatus());
             return ResponseEntity.ok(result);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+    }
+
+    public boolean checkQueueByCustomer(String phoneNumber) {
+        // Possible value of queue status:
+        // Waiting, In Service, Completed, Cancelled, No Show
+
+        // Define the statuses we're interested in
+        List<String> statuses = Arrays.asList("In Service", "Waiting");
+
+        // Query the database for these statuses
+        List<Queue> queue = queueRepository.findQueueByPhoneNumberAndStatus(statuses, phoneNumber);
+        System.out.println(queue.isEmpty());
+
+        // If the list is empty, return true, otherwise return false
+        return queue.isEmpty();
     }
 
     @PutMapping("/updateQueue")
@@ -165,7 +188,7 @@ public class QueueController {
                 existingQueue.setQueueStatus(status);
             }
         }
-        
+
         queueRepository.save(existingQueue);
 
         return ResponseEntity.ok("Update Successful");
